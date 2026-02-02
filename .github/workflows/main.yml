@@ -30,7 +30,7 @@ jobs:
       - name: tune linux network
         run: sudo ethtool -K eth0 tx off rx off
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -59,7 +59,7 @@ jobs:
   lint:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Node setup
         uses: ./.github/actions/setup
@@ -88,7 +88,7 @@ jobs:
           DO_NOT_TRACK: 1 # Disable Turbopack telemetry
 
       - name: Cache build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./*
           key: ${{ github.sha }}
@@ -98,7 +98,7 @@ jobs:
     needs: [changes, build]
     if: needs.changes.outputs.needs_tests == 'true'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Node setup
         uses: ./.github/actions/setup
@@ -108,7 +108,7 @@ jobs:
           cache-propagation-delay: 120 # https://github.com/actions/cache/issues/1710
 
       - name: Restore build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./*
           key: ${{ github.sha }}
@@ -124,7 +124,7 @@ jobs:
     needs: [changes, build]
     if: needs.changes.outputs.needs_tests == 'true'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Node setup
         uses: ./.github/actions/setup
@@ -134,7 +134,7 @@ jobs:
           cache-propagation-delay: 120 # https://github.com/actions/cache/issues/1710
 
       - name: Restore build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./*
           key: ${{ github.sha }}
@@ -154,7 +154,7 @@ jobs:
     outputs:
       matrix: ${{ steps.generate.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             .github/workflows
@@ -194,7 +194,7 @@ jobs:
         options: --health-cmd "redis-cli ping" --health-timeout 30s --health-retries 3
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Node setup
         uses: ./.github/actions/setup
@@ -204,7 +204,7 @@ jobs:
           cache-propagation-delay: 120 # https://github.com/actions/cache/issues/1710
 
       - name: Restore build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./*
           key: ${{ github.sha }}
@@ -241,7 +241,7 @@ jobs:
     outputs:
       matrix: ${{ steps.generate.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             .github/workflows
@@ -263,7 +263,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [e2e-matrix]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Node setup
         uses: ./.github/actions/setup
@@ -273,7 +273,7 @@ jobs:
           cache-propagation-delay: 120 # https://github.com/actions/cache/issues/1710
 
       - name: Restore build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./*
           key: ${{ github.sha }}
@@ -283,7 +283,7 @@ jobs:
         run: pnpm prepare-run-test-against-prod:ci
 
       - name: Cache prepared test environment
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             test/packed
@@ -303,7 +303,7 @@ jobs:
     env:
       SUITE_NAME: ${{ matrix.suite }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Node setup
         uses: ./.github/actions/setup
@@ -313,14 +313,14 @@ jobs:
           cache-propagation-delay: 120 # https://github.com/actions/cache/issues/1710
 
       - name: Restore build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./*
           key: ${{ github.sha }}
           fail-on-cache-miss: true
 
       - name: Restore prepared test environment
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             test/packed
@@ -349,7 +349,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
@@ -395,7 +395,7 @@ jobs:
           PLAYWRIGHT_JSON_OUTPUT_NAME: results_${{ matrix.suite }}_${{ matrix.shard }}.json
           NEXT_TELEMETRY_DISABLED: 1
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: test-results-${{ matrix.suite }}_${{ matrix.shard }}
@@ -495,7 +495,7 @@ jobs:
     env:
       SUITE_NAME: ${{ matrix.suite }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Node setup
         uses: ./.github/actions/setup
@@ -505,7 +505,7 @@ jobs:
           cache-propagation-delay: 120 # https://github.com/actions/cache/issues/1710
 
       - name: Restore build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./*
           key: ${{ github.sha }}
@@ -524,7 +524,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
@@ -543,7 +543,7 @@ jobs:
           PLAYWRIGHT_JSON_OUTPUT_NAME: results_${{ matrix.suite }}.json
           NEXT_TELEMETRY_DISABLED: 1
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: test-results-turbo${{ matrix.suite }}
@@ -597,7 +597,7 @@ jobs:
       MONGODB_VERSION: 6.0
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Node setup
         uses: ./.github/actions/setup
@@ -607,7 +607,7 @@ jobs:
           cache-propagation-delay: 120 # https://github.com/actions/cache/issues/1710
 
       - name: Restore build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./*
           key: ${{ github.sha }}
@@ -641,7 +641,7 @@ jobs:
           key: docker-${{ runner.os }}-mongo-${{ env.MONGODB_VERSION }}
 
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.12.0
+        uses: supercharge/mongodb-github-action@1.12.1
         with:
           mongodb-version: 6.0
         if: matrix.database == 'mongodb'
@@ -662,7 +662,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
@@ -697,7 +697,7 @@ jobs:
     needs: [changes, build]
     if: needs.changes.outputs.needs_tests == 'true'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Node setup
         uses: ./.github/actions/setup
@@ -707,7 +707,7 @@ jobs:
           cache-propagation-delay: 120 # https://github.com/actions/cache/issues/1710
 
       - name: Restore build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./*
           key: ${{ github.sha }}
@@ -760,7 +760,7 @@ jobs:
       actions: read # for fetching base branch bundle stats
       pull-requests: write # for comments
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Node setup
         uses: ./.github/actions/setup
@@ -770,7 +770,7 @@ jobs:
           cache-propagation-delay: 120 # https://github.com/actions/cache/issues/1710
 
       - name: Restore build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./*
           key: ${{ github.sha }}

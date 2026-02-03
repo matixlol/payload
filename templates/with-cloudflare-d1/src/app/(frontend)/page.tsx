@@ -1,34 +1,47 @@
-import { headers as getHeaders } from 'next/headers.js'
 import Image from 'next/image'
 import { getPayload } from 'payload'
 import React from 'react'
-import { fileURLToPath } from 'url'
 
 import config from '@/payload.config'
 import './styles.css'
 
 export default async function HomePage() {
-  const headers = await getHeaders()
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
-  const { user } = await payload.auth({ headers })
+  const { docs } = await payload.find({
+    collection: 'media',
+    limit: 1,
+  })
+  const media = docs[0]
+  const src =
+    typeof media?.url === 'string'
+      ? media.url
+      : media?.filename
+        ? `/api/media/file/${media.filename}`
+        : null
 
-  const fileURL = `vscode://file/${fileURLToPath(import.meta.url)}`
+  const width = typeof media?.width === 'number' ? media.width : 800
+  const height = typeof media?.height === 'number' ? media.height : 600
+  const alt = media?.alt ?? media?.filename ?? 'Uploaded media'
 
   return (
     <div className="home">
       <div className="content">
-        <picture>
-          <source srcSet="https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-favicon.svg" />
-          <Image
-            alt="Payload Logo"
-            height={65}
-            src="https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-favicon.svg"
-            width={65}
-          />
-        </picture>
-        {!user && <h1>Welcome to your new project.</h1>}
-        {user && <h1>Welcome back, {user.email}</h1>}
+        <h1>OpenNext / Cloudflare Image Repro</h1>
+        <p>
+          Upload an image via <a href={payloadConfig.routes.admin}>/admin</a>, then refresh
+          this page.
+        </p>
+        {src ? (
+          <div style={{ display: 'grid', gap: 12, maxWidth: 900 }}>
+            <Image alt={alt} height={height} src={src} width={width} />
+            <div>
+              <strong>Image src:</strong> <code>{src}</code>
+            </div>
+          </div>
+        ) : (
+          <p>No media found yet.</p>
+        )}
         <div className="links">
           <a
             className="admin"
@@ -38,21 +51,14 @@ export default async function HomePage() {
           >
             Go to admin panel
           </a>
-          <a
-            className="docs"
-            href="https://payloadcms.com/docs"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Documentation
-          </a>
         </div>
       </div>
       <div className="footer">
-        <p>Update this page by editing</p>
-        <a className="codeLink" href={fileURL}>
-          <code>app/(frontend)/page.tsx</code>
-        </a>
+        <p>
+          This uses Next/Image with a relative Payload upload URL (e.g.
+          <code> /api/media/file/&lt;filename&gt;</code>). On Cloudflare with OpenNext, the image
+          optimization request can be routed to static assets and return 404.
+        </p>
       </div>
     </div>
   )
